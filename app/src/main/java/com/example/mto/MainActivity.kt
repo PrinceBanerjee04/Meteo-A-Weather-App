@@ -7,15 +7,27 @@ import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationManager
 import android.media.audiofx.Equalizer.Settings
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
 import com.example.mto.databinding.ActivityMainBinding
+import com.example.mto.pojo.ModelClass
+import com.example.mto.utils.ApiUtilities
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import java.math.RoundingMode
+import java.text.SimpleDateFormat
+import java.time.Instant
+import java.time.ZoneId
+import java.util.Date
 import java.util.concurrent.atomic.LongAccumulator
 
 class MainActivity : AppCompatActivity() {
@@ -75,11 +87,53 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun fetchCurrentLocationWeather(latitude:String,longitude:String){
+        activityMainBinding.pbLoading.visibility=View.VISIBLE
+        ApiUtilities.getApiInterface()?.getCurrentWeatherData(latitude,longitude,API_KEY)?.enqueue(object :Callback<ModelClass>{
+            override fun onResponse(call: Call<ModelClass>, response: Response<ModelClass>) {
+                if(response.isSuccessful)
+                {
+                    setDataOnViews(response.body())
+                }
+            }
 
+            override fun onFailure(call: Call<ModelClass>, t: Throwable) {
+                Toast.makeText(applicationContext,"Error",Toast.LENGTH_SHORT).show()
+            }
+
+        })
+    }
+
+    private fun setDataOnViews(body:ModelClass?){
+        val sdf=SimpleDateFormat("dd/MM/yyyy hh:mm")
+        val currentDate=sdf.format(Date())
+        activityMainBinding.tvDateAndTime.text=currentDate
+
+        activityMainBinding.tvDayMaxTemp.text="Day "+kelvinToCelsius(body!!.main.temp_max)+"°"
+        activityMainBinding.tvDayMinTemp.text="Night "+kelvinToCelsius(body!!.main.temp_min)+"°"
+        activityMainBinding.tvTemp.text=""+kelvinToCelsius(body!!.main.temp)+"°"
+        activityMainBinding.tvFeelsLike.text=""+kelvinToCelsius(body!!.main.feels_like)+"°"
+
+        activityMainBinding.tvWeatherType.text=body.weather[0].main
+        activityMainBinding.tvSunrise.text=
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun timeStampToLocalDate(timeStamp:Long):String{
+        val localTime=timeStamp.let {
+            Instant.ofEpochMilli(it).atZone(ZoneId.systemDefault()).toLocalDateTime()
+        }
+        return localTime.toString()
+    }
+
+    private fun kelvinToCelsius(temp:Double):Double{
+        var intTemp=temp
+        intTemp=intTemp.minus(273)
+        return intTemp.toBigDecimal().setScale(1, RoundingMode.UP).toDouble()
     }
 
     companion object{
         private const val PERMISSION_REQUEST_ACCESS_LOCATION=100
+        const val API_KEY=""
     }
 
     private fun isLocationEnabled():Boolean{
