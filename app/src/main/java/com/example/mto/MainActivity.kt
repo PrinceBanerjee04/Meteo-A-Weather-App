@@ -51,8 +51,7 @@ class MainActivity : AppCompatActivity() {
                     }
                     else
                     {
-                        Toast.makeText(applicationContext,"Success",Toast.LENGTH_SHORT).show()
-
+                        fetchCurrentLocationWeather(location.latitude.toString(),location.longitude.toString())
                     }
                 }
             }
@@ -67,6 +66,10 @@ class MainActivity : AppCompatActivity() {
         {
             requestPermission()
         }
+    }
+
+    private fun fetchCurrentLocationWeather(latitude:String,longitude:String){
+
     }
 
     companion object{
