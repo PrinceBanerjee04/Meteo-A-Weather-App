@@ -93,5 +93,24 @@ class MainActivity : AppCompatActivity() {
             PERMISSION_REQUEST_ACCESS_LOCATION)
     }
 
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
+        if(requestCode== PERMISSION_REQUEST_ACCESS_LOCATION)
+        {
+            if(grantResults.isNotEmpty() && grantResults[0]==PackageManager.PERMISSION_GRANTED)
+            {
+                Toast.makeText(applicationContext,"Granted",Toast.LENGTH_SHORT).show()
+                getCurrentLocation()
+            }
+            else
+            {
+                Toast.makeText(applicationContext,"Denied",Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
 }
