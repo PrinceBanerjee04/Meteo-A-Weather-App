@@ -9,19 +9,25 @@ import android.location.LocationManager
 import android.media.audiofx.Equalizer.Settings
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
+import androidx.databinding.DataBindingUtil
+import com.example.mto.databinding.ActivityMainBinding
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import java.util.concurrent.atomic.LongAccumulator
 
 class MainActivity : AppCompatActivity() {
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
+    private lateinit var activityMainBinding: ActivityMainBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        activityMainBinding=DataBindingUtil.setContentView(this,R.layout.activity_main)
+        supportActionBar?.hide()
 
         fusedLocationProviderClient=LocationServices.getFusedLocationProviderClient(this)
+        activityMainBinding.rlMainLayout.visibility= View.GONE
 
         getCurrentLocation()
     }
