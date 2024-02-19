@@ -273,7 +273,7 @@ class MainActivity : AppCompatActivity() {
 
     companion object{
         private const val PERMISSION_REQUEST_ACCESS_LOCATION=100
-        const val API_KEY="69c665ade9bd2a6a42094f186c2ab57d"
+        const val API_KEY=""
     }
 
     private fun isLocationEnabled():Boolean{
