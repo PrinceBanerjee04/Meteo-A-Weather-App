@@ -11,9 +11,13 @@ import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import android.view.WindowManager
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import com.example.mto.databinding.ActivityMainBinding
 import com.example.mto.pojo.ModelClass
@@ -29,6 +33,7 @@ import java.time.Instant
 import java.time.ZoneId
 import java.util.Date
 import java.util.concurrent.atomic.LongAccumulator
+import kotlin.math.roundToInt
 
 class MainActivity : AppCompatActivity() {
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
@@ -42,6 +47,35 @@ class MainActivity : AppCompatActivity() {
         activityMainBinding.rlMainLayout.visibility= View.GONE
 
         getCurrentLocation()
+
+        activityMainBinding.etGetCityName.setOnEditorActionListener({ v, actionId, event ->
+            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                getCityWeather(activityMainBinding.etGetCityName.text.toString())
+                val view = this.currentFocus
+                if (view != null) {
+                    val imm: InputMethodManager =
+                        getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+                    imm.hideSoftInputFromWindow(view.windowToken, 0)
+                    activityMainBinding.etGetCityName.clearFocus()
+                }
+                true
+            } else false
+        })
+    }
+
+    private fun getCityWeather(cityName:String){
+        activityMainBinding.pbLoading.visibility=View.VISIBLE
+        ApiUtilities.getApiInterface()?.getCityWeatherData(cityName, API_KEY)?.enqueue(object :Callback<ModelClass>{
+            @RequiresApi(Build.VERSION_CODES.O)
+            override fun onResponse(call: Call<ModelClass>, response: Response<ModelClass>) {
+                setDataOnViews(response.body())
+            }
+
+            override fun onFailure(call: Call<ModelClass>, t: Throwable) {
+                Toast.makeText(applicationContext,"Not a Valid City Name",Toast.LENGTH_SHORT).show()
+            }
+
+        })
     }
 
     private fun getCurrentLocation(){
@@ -89,6 +123,7 @@ class MainActivity : AppCompatActivity() {
     private fun fetchCurrentLocationWeather(latitude:String,longitude:String){
         activityMainBinding.pbLoading.visibility=View.VISIBLE
         ApiUtilities.getApiInterface()?.getCurrentWeatherData(latitude,longitude,API_KEY)?.enqueue(object :Callback<ModelClass>{
+            @RequiresApi(Build.VERSION_CODES.O)
             override fun onResponse(call: Call<ModelClass>, response: Response<ModelClass>) {
                 if(response.isSuccessful)
                 {
@@ -103,6 +138,7 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun setDataOnViews(body:ModelClass?){
         val sdf=SimpleDateFormat("dd/MM/yyyy hh:mm")
         val currentDate=sdf.format(Date())
@@ -111,10 +147,114 @@ class MainActivity : AppCompatActivity() {
         activityMainBinding.tvDayMaxTemp.text="Day "+kelvinToCelsius(body!!.main.temp_max)+"°"
         activityMainBinding.tvDayMinTemp.text="Night "+kelvinToCelsius(body!!.main.temp_min)+"°"
         activityMainBinding.tvTemp.text=""+kelvinToCelsius(body!!.main.temp)+"°"
-        activityMainBinding.tvFeelsLike.text=""+kelvinToCelsius(body!!.main.feels_like)+"°"
+        activityMainBinding.tvFeelsLike.text="Feels like "+kelvinToCelsius(body!!.main.feels_like)+"°"
 
         activityMainBinding.tvWeatherType.text=body.weather[0].main
-        activityMainBinding.tvSunrise.text=
+        activityMainBinding.tvSunrise.text=timeStampToLocalDate(body.sys.sunrise.toLong())
+        activityMainBinding.tvSunset.text=timeStampToLocalDate(body.sys.sunset.toLong())
+
+        activityMainBinding.tvPressure.text=body.main.pressure.toString()
+        activityMainBinding.tvHumidity.text=body.main.humidity.toString()+" %"
+        activityMainBinding.tvWindSpeed.text=body.wind.speed.toString()+" m/s"
+
+        activityMainBinding.tvTempFahrenheit.text=""+((kelvinToCelsius(body.main.temp).times(1.8).plus(32)).roundToInt())
+        activityMainBinding.etGetCityName.setText(body.name)
+
+        updateUI(body.weather[0].id)
+
+
+
+    }
+
+    private fun updateUI(id :Int ){
+        if(id in 200..232){
+            //Thunderstorm
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+            window.statusBarColor=resources.getColor(R.color.thunderstorm)
+            activityMainBinding.rlToolbar.setBackgroundColor(resources.getColor(R.color.thunderstorm))
+            activityMainBinding.rlSubLayout.background=ContextCompat.getDrawable(this@MainActivity,R.color.thunderstorm) //Add bg
+
+            activityMainBinding.llMainBgBelow.background=ContextCompat.getDrawable(this@MainActivity,R.color.thunderstorm) //Add bg
+            activityMainBinding.llMainBgAbove.background=ContextCompat.getDrawable(this@MainActivity,R.color.thunderstorm) //Add bg
+            activityMainBinding.ivWeatherBg.setImageResource(R.color.thunderstorm) //Add bg
+            activityMainBinding.ivWeatherIcon.setImageResource(R.drawable.thunderstorm1) //Change Icon
+        }else if(id in 300..321){
+            //Drizzle
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+            window.statusBarColor=resources.getColor(R.color.drizzle)
+            activityMainBinding.rlToolbar.setBackgroundColor(resources.getColor(R.color.drizzle))
+            activityMainBinding.rlSubLayout.background=ContextCompat.getDrawable(this@MainActivity,R.color.drizzle) //Add bg
+
+            activityMainBinding.llMainBgBelow.background=ContextCompat.getDrawable(this@MainActivity,R.color.drizzle) //Add bg
+            activityMainBinding.llMainBgAbove.background=ContextCompat.getDrawable(this@MainActivity,R.color.drizzle) //Add bg
+            activityMainBinding.ivWeatherBg.setImageResource(R.color.drizzle) //Add bg
+            activityMainBinding.ivWeatherIcon.setImageResource(R.drawable.lightrain) //Change Icon
+        }else if(id in 500..531){
+            //Rain
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+            window.statusBarColor=resources.getColor(R.color.rain)
+            activityMainBinding.rlToolbar.setBackgroundColor(resources.getColor(R.color.rain))
+            activityMainBinding.rlSubLayout.background=ContextCompat.getDrawable(this@MainActivity,R.color.rain) //Add bg
+
+            activityMainBinding.llMainBgBelow.background=ContextCompat.getDrawable(this@MainActivity,R.color.rain) //Add bg
+            activityMainBinding.llMainBgAbove.background=ContextCompat.getDrawable(this@MainActivity,R.color.rain) //Add bg
+            activityMainBinding.ivWeatherBg.setImageResource(R.color.rain) //Add bg
+            activityMainBinding.ivWeatherIcon.setImageResource(R.drawable.shower) //Change Icon
+        }else if(id in 600..620){
+            //Snow
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+            window.statusBarColor=resources.getColor(R.color.snow)
+            activityMainBinding.rlToolbar.setBackgroundColor(resources.getColor(R.color.snow))
+            activityMainBinding.rlSubLayout.background=ContextCompat.getDrawable(this@MainActivity,R.color.snow) //Add bg
+
+            activityMainBinding.llMainBgBelow.background=ContextCompat.getDrawable(this@MainActivity,R.color.snow) //Add bg
+            activityMainBinding.llMainBgAbove.background=ContextCompat.getDrawable(this@MainActivity,R.color.snow) //Add bg
+            activityMainBinding.ivWeatherBg.setImageResource(R.color.snow) //Add bg
+            activityMainBinding.ivWeatherIcon.setImageResource(R.drawable.snow1) //Change Icon
+        }else if(id in 701..781){
+            //Mist
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+            window.statusBarColor=resources.getColor(R.color.atmosphere)
+            activityMainBinding.rlToolbar.setBackgroundColor(resources.getColor(R.color.atmosphere))
+            activityMainBinding.rlSubLayout.background=ContextCompat.getDrawable(this@MainActivity,R.color.atmosphere) //Add bg
+
+            activityMainBinding.llMainBgBelow.background=ContextCompat.getDrawable(this@MainActivity,R.color.atmosphere) //Add bg
+            activityMainBinding.llMainBgAbove.background=ContextCompat.getDrawable(this@MainActivity,R.color.atmosphere) //Add bg
+            activityMainBinding.ivWeatherBg.setImageResource(R.color.atmosphere) //Add bg
+            activityMainBinding.ivWeatherIcon.setImageResource(R.drawable.fog) //Change Icon
+        }else if(id==800){
+            //Clear or Sunny
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+            window.statusBarColor=resources.getColor(R.color.clear)
+            activityMainBinding.rlToolbar.setBackgroundColor(resources.getColor(R.color.clear))
+            activityMainBinding.rlSubLayout.background=ContextCompat.getDrawable(this@MainActivity,R.color.clear) //Add bg
+
+            activityMainBinding.llMainBgBelow.background=ContextCompat.getDrawable(this@MainActivity,R.color.clear) //Add bg
+            activityMainBinding.llMainBgAbove.background=ContextCompat.getDrawable(this@MainActivity,R.color.clear) //Add bg
+            activityMainBinding.ivWeatherBg.setImageResource(R.color.clear) //Add bg
+            activityMainBinding.ivWeatherIcon.setImageResource(R.drawable.sunny) //Change Icon
+        }else{
+            //Clouds
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+            window.statusBarColor=resources.getColor(R.color.clouds)
+            activityMainBinding.rlToolbar.setBackgroundColor(resources.getColor(R.color.clouds))
+            activityMainBinding.rlSubLayout.background=ContextCompat.getDrawable(this@MainActivity,R.color.clouds) //Add bg
+
+            activityMainBinding.llMainBgBelow.background=ContextCompat.getDrawable(this@MainActivity,R.color.clouds) //Add bg
+            activityMainBinding.llMainBgAbove.background=ContextCompat.getDrawable(this@MainActivity,R.color.clouds) //Add bg
+            activityMainBinding.ivWeatherBg.setImageResource(R.color.clouds) //Add bg
+            activityMainBinding.ivWeatherIcon.setImageResource(R.drawable.cloudy) //Change Icon
+        }
+
+        activityMainBinding.pbLoading.visibility=View.GONE
+        activityMainBinding.rlMainLayout.visibility=View.VISIBLE
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -133,7 +273,7 @@ class MainActivity : AppCompatActivity() {
 
     companion object{
         private const val PERMISSION_REQUEST_ACCESS_LOCATION=100
-        const val API_KEY=""
+        const val API_KEY="69c665ade9bd2a6a42094f186c2ab57d"
     }
 
     private fun isLocationEnabled():Boolean{

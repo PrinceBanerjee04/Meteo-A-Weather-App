@@ -357,10 +357,10 @@
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
                                         android:fontFamily="@font/google_sans_medium"
-                                        android:textSize="@dimen/text_x_large"
                                         android:gravity="center"
+                                        android:text="@string/default_numbers"
                                         android:textColor="@color/white"
-                                        android:text="@string/default_numbers">
+                                        android:textSize="@dimen/text_x_large">
 
                                     </TextView>
 
@@ -368,10 +368,10 @@
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
                                         android:fontFamily="@font/google_sans_regular"
-                                        android:textSize="@dimen/text_med"
                                         android:gravity="center"
+                                        android:text="Wind Speed"
                                         android:textColor="@color/white"
-                                        android:text="@string/pressure">
+                                        android:textSize="@dimen/text_med">
 
                                     </TextView>
 
