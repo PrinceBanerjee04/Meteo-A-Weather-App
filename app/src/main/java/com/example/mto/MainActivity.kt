@@ -178,7 +178,7 @@ class MainActivity : AppCompatActivity() {
             activityMainBinding.llMainBgBelow.background=ContextCompat.getDrawable(this@MainActivity,R.drawable.thunderstorm_bg)
             activityMainBinding.llMainBgAbove.background=ContextCompat.getDrawable(this@MainActivity,R.drawable.thunderstorm_bg)
             activityMainBinding.ivWeatherBg.setImageResource(R.drawable.thunderstorm_bg)
-            activityMainBinding.ivWeatherIcon.setImageResource(R.drawable.thunderstorm1) //Change Icon
+            activityMainBinding.ivWeatherIcon.setImageResource(R.drawable.thunder) //Change Icon
         }else if(id in 300..321){
             //Drizzle
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
@@ -202,7 +202,7 @@ class MainActivity : AppCompatActivity() {
             activityMainBinding.llMainBgBelow.background=ContextCompat.getDrawable(this@MainActivity,R.drawable.rain_bg)
             activityMainBinding.llMainBgAbove.background=ContextCompat.getDrawable(this@MainActivity,R.drawable.rain_bg)
             activityMainBinding.ivWeatherBg.setImageResource(R.drawable.rain_bg)
-            activityMainBinding.ivWeatherIcon.setImageResource(R.drawable.shower) //Change Icon
+            activityMainBinding.ivWeatherIcon.setImageResource(R.drawable.rain)
         }else if(id in 600..620){
             //Snow
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
@@ -214,7 +214,7 @@ class MainActivity : AppCompatActivity() {
             activityMainBinding.llMainBgBelow.background=ContextCompat.getDrawable(this@MainActivity,R.drawable.snow_bg)
             activityMainBinding.llMainBgAbove.background=ContextCompat.getDrawable(this@MainActivity,R.drawable.snow_bg)
             activityMainBinding.ivWeatherBg.setImageResource(R.drawable.snow_bg)
-            activityMainBinding.ivWeatherIcon.setImageResource(R.drawable.snow1) //Change Icon
+            activityMainBinding.ivWeatherIcon.setImageResource(R.drawable.snow)
         }else if(id in 701..781){
             //Mist
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
