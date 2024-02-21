@@ -178,7 +178,7 @@ class MainActivity : AppCompatActivity() {
             activityMainBinding.llMainBgBelow.background=ContextCompat.getDrawable(this@MainActivity,R.drawable.thunderstorm_bg)
             activityMainBinding.llMainBgAbove.background=ContextCompat.getDrawable(this@MainActivity,R.drawable.thunderstorm_bg)
             activityMainBinding.ivWeatherBg.setImageResource(R.drawable.thunderstorm_bg)
-            activityMainBinding.ivWeatherIcon.setImageResource(R.drawable.thunder) //Change Icon
+            activityMainBinding.ivWeatherIcon.setImageResource(R.drawable.thunder)
         }else if(id in 300..321){
             //Drizzle
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
@@ -190,7 +190,7 @@ class MainActivity : AppCompatActivity() {
             activityMainBinding.llMainBgBelow.background=ContextCompat.getDrawable(this@MainActivity,R.drawable.drizzle_bg)
             activityMainBinding.llMainBgAbove.background=ContextCompat.getDrawable(this@MainActivity,R.drawable.drizzle_bg)
             activityMainBinding.ivWeatherBg.setImageResource(R.drawable.drizzle_bg)
-            activityMainBinding.ivWeatherIcon.setImageResource(R.drawable.lightrain) //Change Icon
+            activityMainBinding.ivWeatherIcon.setImageResource(R.drawable.lightrain)
         }else if(id in 500..531){
             //Rain
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
@@ -226,7 +226,7 @@ class MainActivity : AppCompatActivity() {
             activityMainBinding.llMainBgBelow.background=ContextCompat.getDrawable(this@MainActivity,R.drawable.mist_bg)
             activityMainBinding.llMainBgAbove.background=ContextCompat.getDrawable(this@MainActivity,R.drawable.mist_bg)
             activityMainBinding.ivWeatherBg.setImageResource(R.drawable.mist_bg)
-            activityMainBinding.ivWeatherIcon.setImageResource(R.drawable.fog) //Change Icon
+            activityMainBinding.ivWeatherIcon.setImageResource(R.drawable.foggy)
         }else if(id==800){
             //Clear or Sunny
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
@@ -238,7 +238,7 @@ class MainActivity : AppCompatActivity() {
             activityMainBinding.llMainBgBelow.background=ContextCompat.getDrawable(this@MainActivity,R.drawable.clear_bg)
             activityMainBinding.llMainBgAbove.background=ContextCompat.getDrawable(this@MainActivity,R.drawable.clear_bg)
             activityMainBinding.ivWeatherBg.setImageResource(R.drawable.clear_bg)
-            activityMainBinding.ivWeatherIcon.setImageResource(R.drawable.sunny) //Change Icon
+            activityMainBinding.ivWeatherIcon.setImageResource(R.drawable.sun)
         }else{
             //Clouds
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
@@ -250,7 +250,7 @@ class MainActivity : AppCompatActivity() {
             activityMainBinding.llMainBgBelow.background=ContextCompat.getDrawable(this@MainActivity,R.drawable.cloud_bg)
             activityMainBinding.llMainBgAbove.background=ContextCompat.getDrawable(this@MainActivity,R.drawable.cloud_bg)
             activityMainBinding.ivWeatherBg.setImageResource(R.drawable.cloud_bg)
-            activityMainBinding.ivWeatherIcon.setImageResource(R.drawable.cloudy) //Change Icon
+            activityMainBinding.ivWeatherIcon.setImageResource(R.drawable.cloud)
         }
 
         activityMainBinding.pbLoading.visibility=View.GONE
